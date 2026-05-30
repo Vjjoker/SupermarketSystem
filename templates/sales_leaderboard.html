@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>我的业绩 - 销售人员</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: linear-gradient(145deg, #ffe6f0 0%, #ffd9e8 100%); font-family: 'Quicksand', sans-serif; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: #ffb7c5; border-radius: 30px; padding: 15px 25px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
+        .stat-card { background: white; border-radius: 25px; padding: 20px; text-align: center; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .rank-card { background: white; border-radius: 25px; padding: 20px; margin-bottom: 20px; }
+        .champion-card { background: linear-gradient(135deg, #ffd700, #ffb347); border-radius: 25px; padding: 20px; color: white; text-align: center; margin-bottom: 20px; }
+        .gold { color: #ffd700; }
+        .my-row { background-color: #fff0f5; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2 style="color: white;">🌸 我的业绩看板</h2>
+            <a href="/sales" class="btn btn-light">← 返回销售台</a>
+        </div>
+
+        <!-- 筛选栏 -->
+        <div class="rank-card">
+            <form method="GET" class="row g-3">
+                <div class="col-auto">
+                    <select name="filter" class="form-select" onchange="this.form.submit()">
+                        <option value="today" {% if filter_type=='today' %}selected{% endif %}>今日</option>
+                        <option value="week" {% if filter_type=='week' %}selected{% endif %}>本周</option>
+                        <option value="custom" {% if filter_type=='custom' %}selected{% endif %}>自定义</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <input type="date" name="start_date" value="{{ start_date }}" class="form-control">
+                </div>
+                <div class="col-auto">至</div>
+                <div class="col-auto">
+                    <input type="date" name="end_date" value="{{ end_date }}" class="form-control">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary" style="background-color: #ff69b4;">查询</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 销冠展示 -->
+        {% if champion %}
+        <div class="champion-card">
+            <h3>👑 本期销冠</h3>
+            <div class="row">
+                <div class="col-6">
+                    <h2>{{ champion[1] or champion[2] }}</h2>
+                    <p>销售额: ¥{{ "%.2f"|format(champion[3]) }}</p>
+                </div>
+                <div class="col-6">
+                    <p>订单数: {{ champion[4] }} 笔</p>
+                    <p>🏆 冠军荣耀 🏆</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 我的业绩 -->
+        <div class="stat-card">
+            <h3>✨ 我的业绩</h3>
+            <div class="row g-3">
+                <div class="col-md-3 col-6">
+                    <h4>排名</h4>
+                    <h2 style="color: #ff69b4;">第 {{ my_rank }} 名</h2>
+                </div>
+                <div class="col-md-3 col-6">
+                    <h4>销售额</h4>
+                    <h2 style="color: #ff1493;">¥{{ "%.2f"|format(my_sales) }}</h2>
+                </div>
+                <div class="col-md-3 col-6">
+                    <h4>订单数</h4>
+                    <h2 style="color: #d95b7a;">{{ my_orders }} 笔</h2>
+                </div>
+                <div class="col-md-3 col-6">
+                    <h4>利润</h4>
+                    <h2 style="color: #2a9d6f;">¥{{ "%.2f"|format(my_profit) }}</h2>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <p style="margin:0; color:#b34e6b;">当前区间成本：¥{{ "%.2f"|format(my_cost) }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 排行榜 -->
+        <div class="rank-card">
+            <h3>🏆 销售排行榜</h3>
+            <table class="table">
+                <thead>
+                    <tr><th>排名</th><th>姓名</th><th>销售额</th><th>订单数</th></tr>
+                </thead>
+                <tbody>
+                    {% for l in leaderboard %}
+                    <tr {% if l[0] == session.get('user_id') %}class="my-row"{% endif %}>
+                        <td>
+                            {% if loop.index == 1 %}🥇
+                            {% elif loop.index == 2 %}🥈
+                            {% elif loop.index == 3 %}🥉
+                            {% else %}{{ loop.index }}{% endif %}
+                        </td>
+                        <td>{{ l[1] or l[2] }}</td>
+                        <td>¥{{ "%.2f"|format(l[3]) }}</td>
+                        <td>{{ l[4] }} 笔</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 我的销售记录 -->
+        <div class="rank-card">
+            <h3>📋 我的销售记录</h3>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr><th>订单号</th><th>商品</th><th>数量</th><th>总价</th><th>利润</th><th>时间</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for r in my_records %}
+                        <tr>
+                            <td>{{ r[5] }}</td>
+                            <td>{{ r[1] }}</td>
+                            <td>{{ r[2] }}</td>
+                            <td>¥{{ "%.2f"|format(r[3]) }}</td>
+                            <td>¥{{ "%.2f"|format(r[6]) }}</td>
+                            <td>{{ r[4] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

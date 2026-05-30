@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>销售工作台 - Hello Kitty 超市</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(145deg, #ffe6f0 0%, #ffd9e8 100%);
+            font-family: 'Quicksand', 'Segoe UI', 'Comic Neue', sans-serif;
+            padding: 30px 20px;
+            min-height: 100vh;
+        }
+        .kitty-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .kitty-header {
+            background: #ffb7c5;
+            border-radius: 60px 60px 40px 40px;
+            padding: 15px 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(255, 105, 130, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .logo-area img {
+            width: 55px;
+            height: 55px;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1));
+        }
+        .logo-area h1 {
+            font-size: 1.8rem;
+            color: #fff;
+            text-shadow: 2px 2px 0 #e85d7a;
+        }
+        .btn-leaderboard {
+            background: white;
+            color: #ff69b4;
+            padding: 8px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.2s;
+            margin-right: 10px;
+            display: inline-block;
+        }
+        .btn-leaderboard:hover {
+            background: #fff0f3;
+            transform: scale(1.02);
+        }
+        .logout-btn {
+            background: white;
+            color: #ff8aa8;
+            padding: 8px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .logout-btn:hover {
+            background: #fff0f3;
+        }
+        .welcome-text {
+            font-size: 1rem;
+            background: #fff0f3;
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 30px;
+            color: #d95b7a;
+            margin-right: 15px;
+        }
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 32px;
+            padding: 18px 25px;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(255, 90, 120, 0.1);
+            border: 1px solid #ffc0d0;
+        }
+        .stat-card h4 {
+            color: #b34e6b;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ff7a9e;
+        }
+        .rank-list {
+            background: #fff9fb;
+            border-radius: 28px;
+            padding: 15px 20px;
+            border: 1px solid #ffd0dc;
+        }
+        .rank-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px dashed #ffe0e8;
+        }
+        .rank-number {
+            width: 30px;
+            height: 30px;
+            background: #ff98b3;
+            color: white;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(2px);
+            border-radius: 32px;
+            padding: 25px 30px;
+            margin-bottom: 28px;
+            box-shadow: 0 12px 28px rgba(255, 90, 120, 0.15);
+            border: 1px solid #ffc0d0;
+        }
+        .card h3 {
+            font-size: 1.7rem;
+            color: #d95b7a;
+            border-left: 8px solid #ff98b3;
+            padding-left: 18px;
+            margin-bottom: 20px;
+        }
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .filter-group label {
+            font-weight: 600;
+            color: #b34e6b;
+            font-size: 0.85rem;
+        }
+        select, input[type="date"] {
+            padding: 10px 16px;
+            border-radius: 40px;
+            border: 1px solid #ffbfcf;
+            background: white;
+            font-family: inherit;
+        }
+        .btn-filter, .btn-main, .btn-remove {
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 40px;
+        }
+        .btn-filter, .btn-main {
+            background: #ff98b3;
+            color: white;
+            padding: 10px 25px;
+        }
+        .btn-main:hover, .btn-filter:hover {
+            background: #e85d7a;
+        }
+        .btn-remove {
+            background: #fff0f3;
+            color: #d95b7a;
+            padding: 8px 14px;
+        }
+        .product-table, .record-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 24px;
+            overflow: hidden;
+        }
+        .product-table th, .record-table th {
+            background: #ffe2ea;
+            color: #b34e6b;
+            padding: 14px 10px;
+        }
+        .product-table td, .record-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #ffe0e8;
+            background: white;
+            color: #5a3e47;
+        }
+        .product-table tr:hover td {
+            background: #fff4f7;
+        }
+        .sale-form {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .sale-form input {
+            width: 90px;
+            padding: 8px;
+            border: 1px solid #ffbfcf;
+            border-radius: 30px;
+            text-align: center;
+        }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .alert {
+            padding: 12px 20px;
+            border-radius: 50px;
+            margin-bottom: 12px;
+        }
+        .alert-success {
+            background: #d4f0dd;
+            color: #2a6b47;
+            border-left: 8px solid #4caf50;
+        }
+        .alert-danger {
+            background: #ffe2e6;
+            color: #ba5a6e;
+            border-left: 8px solid #f44336;
+        }
+        .cart-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 16px 20px;
+            background: #fff6f9;
+            border: 1px solid #ffd0dc;
+            border-radius: 24px;
+            margin-top: 16px;
+        }
+        .cart-total {
+            font-size: 1.1rem;
+            color: #d95b7a;
+            font-weight: bold;
+        }
+        .order-note {
+            font-size: 0.9rem;
+            color: #b34e6b;
+            margin-top: 8px;
+        }
+        @media (max-width: 800px) {
+            .card { padding: 18px; }
+            .product-table th, .product-table td, .record-table th, .record-table td { font-size: 0.8rem; }
+        }
+    </style>
+    <script>
+        const SALES_SCROLL_KEY = 'sales-dashboard-scroll-y';
+        const SALES_TARGET_KEY = 'sales-dashboard-target';
+
+        function rememberScroll(targetId) {
+            sessionStorage.setItem(SALES_SCROLL_KEY, String(window.scrollY));
+            if (targetId) {
+                sessionStorage.setItem(SALES_TARGET_KEY, targetId);
+            }
+        }
+
+        function printReceipt(orderNo, items, totalPrice, totalProfit, saleTime) {
+            const rows = items.map(
+                item => `<p><strong>${item.product_name}</strong> x ${item.quantity} = ¥${item.subtotal.toFixed(2)}</p>`
+            ).join('');
+            const receiptWindow = window.open('', '_blank', 'width=420,height=560');
+            receiptWindow.document.write(`
+                <html>
+                <head><title>🌸 Hello Kitty 超市 销售小票</title>
+                <style>
+                    body { font-family: 'Courier New', monospace; padding: 20px; text-align: center; background: #fffafc; }
+                    .receipt { border: 2px dashed #ff98b3; padding: 20px; border-radius: 20px; max-width: 320px; margin: auto; }
+                    h2 { color: #d95b7a; }
+                    .line { border-top: 1px dashed #ffbfcf; margin: 15px 0; }
+                    .thankyou { color: #ff7a9e; margin-top: 20px; }
+                    p { margin: 6px 0; }
+                </style>
+                </head>
+                <body>
+                <div class="receipt">
+                    <h2>🐱 Hello Kitty 超市</h2>
+                    <p>订单小票</p>
+                    <p><strong>订单号：</strong>${orderNo}</p>
+                    <div class="line"></div>
+                    ${rows}
+                    <div class="line"></div>
+                    <p><strong>订单总金额：</strong> ¥${totalPrice.toFixed(2)}</p>
+                    <p><strong>本单利润：</strong> ¥${totalProfit.toFixed(2)}</p>
+                    <p><strong>时间：</strong> ${saleTime}</p>
+                    <div class="line"></div>
+                    <p class="thankyou">谢谢惠顾，欢迎再次光临！🌸</p>
+                </div>
+                <script>window.print();setTimeout(function(){window.close();},1000);<\/script>
+                </body>
+                </html>
+            `);
+            receiptWindow.document.close();
+        }
+
+        window.onload = function() {
+            const targetId = sessionStorage.getItem(SALES_TARGET_KEY);
+            const savedY = sessionStorage.getItem(SALES_SCROLL_KEY);
+            if (targetId) {
+                const targetEl = document.getElementById(targetId);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ block: 'start' });
+                }
+                sessionStorage.removeItem(SALES_TARGET_KEY);
+            } else if (savedY !== null) {
+                window.scrollTo(0, Number(savedY));
+            }
+            sessionStorage.removeItem(SALES_SCROLL_KEY);
+
+            {% if last_sale %}
+                printReceipt(
+                    '{{ last_sale.order_no }}',
+                    {{ last_sale['items']|tojson }},
+                    {{ last_sale.total_price }},
+                    {{ last_sale.total_profit }},
+                    '{{ last_sale.sale_time }}'
+                );
+            {% endif %}
+        };
+    </script>
+</head>
+<body>
+<div class="kitty-container">
+    <div class="kitty-header">
+        <div class="logo-area">
+            <img src="https://cdn-icons-png.flaticon.com/512/1995/1995572.png" alt="Hello Kitty">
+            <h1>🐱 Hello Kitty 超市 · 销售部</h1>
+        </div>
+        <div>
+            <span class="welcome-text">🌸 欢迎，销售员 {{ session.get('user_id') }}</span>
+            <a href="/sales/leaderboard" class="btn-leaderboard">📊 我的业绩</a>
+            <a href="{{ url_for('logout') }}" class="logout-btn">🚪 退出登录</a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">✨ {{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <h4>💰 当前区间营业额</h4>
+            <div class="stat-number">¥ {{ "%.2f"|format(total_amount) }}</div>
+        </div>
+        <div class="stat-card">
+            <h4>📦 当前区间订单数</h4>
+            <div class="stat-number">{{ total_orders }} 笔</div>
+        </div>
+        <div class="stat-card">
+            <h4>📈 当前区间利润</h4>
+            <div class="stat-number">¥ {{ "%.2f"|format(total_profit) }}</div>
+        </div>
+        <div class="stat-card">
+            <h4>🏆 今日销量榜</h4>
+            <div class="rank-list">
+                {% if top_products %}
+                    {% for product in top_products %}
+                        <div class="rank-item">
+                            <span class="rank-number">{{ loop.index }}</span>
+                            <span>{{ product[0] }}</span>
+                            <span style="margin-left:auto; font-weight:bold;">x{{ product[1] }}</span>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div>暂无销售数据~</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>🔍 商品搜索</h3>
+        <form method="GET" action="{{ url_for('sales') }}" class="search-form" style="display: flex; gap: 12px;">
+            <input type="text" name="keyword" placeholder="按名称 / 条码 / 厂商..." value="{{ keyword }}" style="flex:1; padding:12px; border-radius:48px; border:1px solid #ffbfcf;">
+            <button type="submit" class="btn-main">🎀 搜索</button>
+        </form>
+    </div>
+
+    <div class="card" id="current-order-section">
+        <h3>🧾 当前订单</h3>
+        {% if sales_cart %}
+            <table class="record-table">
+                <thead>
+                    <tr><th>商品名称</th><th>单价</th><th>数量</th><th>小计</th><th>操作</th></tr>
+                </thead>
+                <tbody>
+                    {% for item in sales_cart %}
+                    <tr>
+                        <td>{{ item.product_name }}</td>
+                        <td>¥{{ "%.2f"|format(item.sale_price) }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>¥{{ "%.2f"|format(item.sale_price * item.quantity) }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('sales') }}" onsubmit="rememberScroll('current-order-section')">
+                                <input type="hidden" name="action" value="remove_from_cart">
+                                <input type="hidden" name="product_id" value="{{ item.product_id }}">
+                                <button type="submit" class="btn-remove">移除</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="cart-summary">
+                <div class="cart-total">订单总金额：¥{{ "%.2f"|format(cart_total) }}</div>
+                <form method="POST" action="{{ url_for('sales') }}" onsubmit="rememberScroll('current-order-section')">
+                    <input type="hidden" name="action" value="checkout">
+                    <button type="submit" class="btn-main">一次结算为一笔订单</button>
+                </form>
+            </div>
+            <div class="order-note">同一位顾客本次购买的全部商品，会在系统中记作一笔订单。</div>
+        {% else %}
+            <p>当前订单为空，请先从下方商品列表加入商品。</p>
+        {% endif %}
+    </div>
+
+    <div class="card" id="product-list-section">
+        <h3>📦 商品列表</h3>
+        {% if products %}
+            <table class="product-table">
+                <thead><tr><th>ID</th><th>条码</th><th>名称</th><th>厂商</th><th>单价</th><th>库存</th><th>加入订单</th></tr></thead>
+                <tbody>
+                    {% for p in products %}
+                    <tr>
+                        <td>{{ p[0] }}</td>
+                        <td>{{ p[1] }}</td>
+                        <td>{{ p[2] }}</td>
+                        <td>{{ p[3] }}</td>
+                        <td>¥{{ "%.2f"|format(p[4]) }}</td>
+                        <td style="{% if p[5] <= 5 %}color:#e85d7a; font-weight:bold;{% endif %}">{{ p[5] }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('sales') }}" class="sale-form" onsubmit="rememberScroll('product-list-section')">
+                                <input type="hidden" name="action" value="add_to_cart">
+                                <input type="hidden" name="product_id" value="{{ p[0] }}">
+                                <input type="number" name="quantity" placeholder="数量" min="1" required style="width:80px;">
+                                <button type="submit" class="btn-main" style="padding: 8px 14px;">加入订单</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>没有找到商品～</p>
+        {% endif %}
+    </div>
+
+    <div class="card" id="sales-record-section">
+        <h3>📋 销售记录</h3>
+        <div class="filter-bar">
+            <form method="GET" action="{{ url_for('sales') }}" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;" onsubmit="rememberScroll('sales-record-section')">
+                <div class="filter-group">
+                    <label>快速筛选</label>
+                    <select name="filter" onchange="rememberScroll('sales-record-section'); this.form.submit()">
+                        <option value="today" {% if filter_type=='today' %}selected{% endif %}>今日</option>
+                        <option value="week" {% if filter_type=='week' %}selected{% endif %}>本周</option>
+                        <option value="custom" {% if filter_type=='custom' %}selected{% endif %}>自定义</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>开始日期</label>
+                    <input type="date" name="start_date" value="{{ start_date }}">
+                </div>
+                <div class="filter-group">
+                    <label>结束日期</label>
+                    <input type="date" name="end_date" value="{{ end_date }}">
+                </div>
+                <button type="submit" class="btn-filter">🔍 筛选</button>
+                <input type="hidden" name="keyword" value="{{ keyword }}">
+            </form>
+        </div>
+
+        <h4 style="color:#d95b7a; margin-bottom:12px;">订单汇总</h4>
+        {% if order_summaries %}
+            <table class="record-table" style="margin-bottom: 20px;">
+                <thead><tr><th>订单号</th><th>商品种类</th><th>总件数</th><th>营业额</th><th>利润</th><th>时间</th></tr></thead>
+                <tbody>
+                    {% for o in order_summaries %}
+                    <tr>
+                        <td>{{ o[0] }}</td>
+                        <td>{{ o[2] }}</td>
+                        <td>{{ o[3] }}</td>
+                        <td>¥{{ "%.2f"|format(o[4]) }}</td>
+                        <td>¥{{ "%.2f"|format(o[5]) }}</td>
+                        <td>{{ o[1] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>该时间段内没有订单记录。</p>
+        {% endif %}
+
+        <h4 style="color:#d95b7a; margin-bottom:12px;">商品明细</h4>
+        {% if sales_records %}
+            <table class="record-table">
+                <thead><tr><th>订单号</th><th>商品名称</th><th>数量</th><th>总价(元)</th><th>利润(元)</th><th>销售时间</th></tr></thead>
+                <tbody>
+                    {% for r in sales_records %}
+                    <tr>
+                        <td>{{ r[5] }}</td>
+                        <td>{{ r[1] }}</td>
+                        <td>{{ r[2] }}</td>
+                        <td>¥{{ "%.2f"|format(r[3]) }}</td>
+                        <td>¥{{ "%.2f"|format(r[6]) }}</td>
+                        <td>{{ r[4] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>该时间段内没有销售明细。</p>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>
