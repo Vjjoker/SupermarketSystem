@@ -1,4 +1,3 @@
-import os
 from flask import Flask, render_template, request, redirect, session, flash, url_for
 from auth import verify_user, register_user
 from user_manage import get_all_users, search_users, add_user, delete_user, get_user_by_id, update_user
@@ -36,7 +35,7 @@ from product_manage import (
 from db_conn import get_conn
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
+app.secret_key = 'secret123'
 
 
 @app.route('/', methods=['GET', 'POST'])
